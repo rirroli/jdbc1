@@ -1,23 +1,21 @@
 package com.djp.test;
 
 
-
-public class Student {
-    private int  id;
+public class Student{
+    private Integer id;
     private String name;
-    private int age;
+    private Integer age;
 
     public Student() {
-
     }
 
-    public Student(int  id, String name, int age) {
+    public Student(Integer id, String name, Integer age) {
         this.id = id;
         this.name = name;
         this.age = age;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -33,7 +31,7 @@ public class Student {
         this.name = name;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
