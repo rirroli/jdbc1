@@ -17,7 +17,8 @@ public class JdbcTest {
 //            System.out.println(student);
 //        }
 //        insertPicture();
-        getDatabaseInfo();
+//        getDatabaseInfo();
+        System.out.println(JdbcTools.getConnection());
     }
 
     // 先数据库中插入一条数据
@@ -193,5 +194,6 @@ public class JdbcTest {
             JdbcTools.release(null,null,conn);
         }
     }
+
 }
 
