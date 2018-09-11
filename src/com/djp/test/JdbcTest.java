@@ -4,25 +4,20 @@ import com.djp.tools.JdbcTools;
 import org.apache.commons.beanutils.BeanUtils;
 
 
+import java.io.FileInputStream;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class JdbcTest {
     public static void main(String[] args) throws Exception {
-        /*Driver driver = new com.mysql.jdbc.Driver();
-        String url = "jdbc:mysql://localhost:3306/yun1.0";
-        Properties info = new Properties();
-        info.put("user", "root");
-        info.put("password", "123");
-        Connection connection = driver.connect(url,info);
-        System.out.println(connection);*/
-        String sql = "select * from students";
-        System.out.println(getAll(sql));
-
+//        List<Student> all = getAll("select * from students");
+//        for (Student student : all) {
+//            System.out.println(student);
+//        }
+//        insertPicture();
+        getDatabaseInfo();
     }
 
     // 先数据库中插入一条数据
@@ -92,11 +87,10 @@ public class JdbcTest {
                 for (int i = 0; i < rsmd.getColumnCount(); i++) {
                     String column_Name = rsmd.getColumnName(i + 1);
                     Object value = rs.getObject(column_Name);
-                    BeanUtils.setProperty(student,column_Name,value);
+                    BeanUtils.setProperty(student, column_Name, value);
                 }
 
             }
-
 
 
         } catch (Exception e) {
@@ -116,19 +110,14 @@ public class JdbcTest {
         try {
             conn = JdbcTools.getConnection2();
             ps = conn.prepareStatement(sql);
-            for (int i = 0; i < args.length; i++) {
-                ps.setObject(i + 1, args[i]);
-            }
+            for (int i = 0; i < args.length; i++) ps.setObject(i + 1, args[i]);
             rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
-            while (rs.next()) {
-                // 创建对象
-                Student student = Student.class.newInstance();
-                // 获取表中的字段名称和对应的值
-                for (int i = 0; i <metaData.getColumnCount(); i++) {
+            while (rs.next()) {/* 创建对象*/
+                Student student = Student.class.newInstance();/* 获取表中的字段名称和对应的值*/
+                for (int i = 0; i < metaData.getColumnCount(); i++) {
                     String columnName = metaData.getColumnName(i + 1);
-                    Object columnValue = rs.getObject(columnName);
-                    // 给对象的属性赋值
+                    Object columnValue = rs.getObject(columnName);/* 给对象的属性赋值*/
                     BeanUtils.setProperty(student, columnName, columnValue);
                 }
                 studentList.add(student);
@@ -142,5 +131,67 @@ public class JdbcTest {
 
     }
 
+    // 获取数据库新生成的主键值
+    public static void getMainKey() throws Exception {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = JdbcTools.getConnection2();
+            // 使用重载的方法来生成ps对象
+            ps = conn.prepareStatement("insert into students (name, age) values (?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, "a4");
+            ps.setInt(2, 4);
+            ps.executeUpdate();
+            ResultSet keys = ps.getGeneratedKeys();
+            while (keys.next()) {
+                System.out.println(keys.getObject(1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JdbcTools.release(null, ps, conn);
+        }
+
+    }
+
+    // 向表中添加一张图片
+    public static void insertPicture() throws Exception {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = JdbcTools.getConnection2();
+            ps = conn.prepareStatement("insert into students (name, age, pictureint) " +
+                    "values (?,?,?)");
+            ps.setString(1, "a5");
+            ps.setInt(2, 5);
+            ps.setBlob(3,
+                    new FileInputStream("C:\\Users\\a1553\\Pictures\\Saved Pictures\\1.jpg"));
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+             JdbcTools.release(null,ps,conn);
+        }
+    }
+    // 获取数据库的相关信息
+    public static void getDatabaseInfo() throws Exception {
+        Connection conn = null;
+        try {
+            conn = JdbcTools.getConnection2();
+            DatabaseMetaData dmd = conn.getMetaData();
+            // 获取数据库版本
+            System.out.println(dmd.getDatabaseMinorVersion());
+            // 获取登陆数据库的驱动名称
+            System.out.println(dmd.getDriverName());
+            // 获取登陆数据库的用户名
+            System.out.println(dmd.getUserName());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            JdbcTools.release(null,null,conn);
+        }
+    }
 }
 

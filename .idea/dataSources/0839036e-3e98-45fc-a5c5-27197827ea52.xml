@@ -932,7 +932,12 @@
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="233" parent="229" name="PRIMARY">
+    <column id="233" parent="229" name="pictureint">
+      <Position>4</Position>
+      <DataType>mediumblob|0s</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="234" parent="229" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
